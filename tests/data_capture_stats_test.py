@@ -1,13 +1,12 @@
-from typing import List, Tuple, Callable, Dict, Any
+import math
+from typing import Tuple, Dict
 
 from hypothesis import given
-from hypothesis.strategies import integers, lists, tuples, composite, SearchStrategy
 import pytest
 
 from data_capture import (
     MIN_VALID_NUMBER,
     MAX_VALID_NUMBER,
-    DataCapture,
     DataCaptureStats,
     InvalidBetweenRangeError,
     InvalidNumberError,
@@ -64,9 +63,10 @@ def test_greater_query_errors(number: int, numbers_stats: Tuple[Dict[int, int], 
 def test_between_query(numbers_stats: Tuple[Dict[int, int], DataCaptureStats]) -> None:
     added, dcs = numbers_stats
     total_frequency = sum(added.values())
-    for number, frequency in added.items():
-        assert dcs.between(number, number) == frequency
-        assert dcs.less(number) + frequency + dcs.greater(number) == total_frequency
+    numbers = sorted(added.keys())
+    for i, j in ((i, len(numbers) - i - 1) for i in range(math.ceil(len(numbers) / 2))):
+        ln, hn = numbers[i], numbers[j]
+        assert dcs.less(ln) + dcs.between(ln, hn) + dcs.greater(hn) == total_frequency
 
 
 @given(stats(min_valid_number=MIN_VALID_NUMBER + 1, max_valid_number=MAX_VALID_NUMBER - 1))
