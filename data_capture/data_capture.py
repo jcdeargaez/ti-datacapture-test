@@ -1,11 +1,11 @@
 from dataclasses import replace
 from typing import Dict
 
-from expression import Result, Ok
+from expression import Result, Ok, Error
 
 from data_capture import captured_number
-from .data_capture_stats import DataCaptureStats
-from .domain import (
+from data_capture.data_capture_stats import DataCaptureStats
+from data_capture.domain import (
     CapturedNumber,
     CapturedNumberFrequency,
     InvalidNumberError,
@@ -13,7 +13,7 @@ from .domain import (
     MAX_VALID_NUMBER,
     MIN_VALID_NUMBER
 )
-from .util import return_ok_value_or_raise
+from data_capture.util import return_ok_value_or_raise
 
 
 class DataCapture:
@@ -50,5 +50,7 @@ class DataCapture:
                 capt_num = CapturedNumber(number)
                 if (capt_num_freq := self.added_values.get(capt_num)) is not None:
                     yield capt_num_freq
-
-        return Ok(DataCaptureStats(walk_captured_numbers_frequencies(), self.total_frequency))
+        try:
+            return Ok(DataCaptureStats(walk_captured_numbers_frequencies(), self.total_frequency))
+        except NoCapturedNumbersError as ex:
+            return Error(ex)

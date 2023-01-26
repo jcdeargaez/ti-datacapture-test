@@ -33,3 +33,12 @@ Unit testing was integrated with random generated data also to test expected err
 
 * Python 3.11.1
 * Packages in requirements.txt
+
+### REPL
+
+To load in a Python interactive session, source files are layered as following:
+1. domain.py
+1. util.py
+1. captured_number.py
+1. data_capture_stats.py
+1. data_capture.py

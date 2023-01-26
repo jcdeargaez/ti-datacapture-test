@@ -4,7 +4,7 @@ from typing import Callable, Tuple, Iterable
 from expression import Result, Ok, Error
 
 from data_capture import captured_number
-from .domain import (
+from data_capture.domain import (
     CapturedNumber,
     CapturedNumberFrequency,
     CapturedNumberStats,
@@ -13,7 +13,7 @@ from .domain import (
     NoCapturedNumberError,
     NoCapturedNumbersError
 )
-from .util import fst, return_ok_value_or_raise
+from data_capture.util import fst, return_ok_value_or_raise
 
 
 class DataCaptureStats:

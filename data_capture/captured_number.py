@@ -1,6 +1,6 @@
 from expression import Result, Ok, Error
 
-from .domain import CapturedNumber, InvalidNumberError
+from data_capture.domain import CapturedNumber, InvalidNumberError
 
 
 def create(number: int) -> Result[CapturedNumber, InvalidNumberError]:

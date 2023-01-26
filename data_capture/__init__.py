@@ -7,7 +7,6 @@ from data_capture.domain import (
 
     # Types
     CapturedNumber,
-    CapturedNumberFrequency,
     CapturedNumberStats,
 
     # Errors
