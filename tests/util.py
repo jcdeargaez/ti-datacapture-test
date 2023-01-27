@@ -2,12 +2,9 @@ from typing import List, Tuple, Callable, Dict, Any
 
 from hypothesis.strategies import integers, lists, tuples, composite, SearchStrategy
 
-from data_capture import (
-    MIN_VALID_NUMBER,
-    MAX_VALID_NUMBER,
-    DataCapture,
-    DataCaptureStats,
-)
+from core.domain import MIN_VALID_NUMBER, MAX_VALID_NUMBER
+from ooapi.data_capture import DataCapture
+from ooapi.data_capture_stats import DataCaptureStats
 
 
 @composite
