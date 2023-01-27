@@ -8,14 +8,25 @@ Python dev test by Juan Argaez, 01/25/2023
 
 ### Design
 
+#### Functional Core
+
+Following a functional approach and the clean/onion architecture, there is a core module with business domain types and
+operations as functions. This has advantage of having succinct code, easy to understand, test and maintain. Also
+inherits the principle of making illegal states unrepresentable. For instance, at this core there is no code path to
+build stats when numbers are not captured yet.
+
+Having the core composed of pure functions and immutable data, gives confidence that state won't be corrupted by wrong
+states bugs. Also, option containers are used to represent presence and absense of data, so `None` errors are avoided.
+
+With above benefits, technical debt is reduced.
+
+#### Object-Oriented API
+
+Since two objects are required to interface with capturing numbers and querying stats, there is a module to expose this
+functionality interoperable with the functional core and exposed as objects for OOP.
+
 * `DataCapture` class has `add` and `build_stats` methods.
 * `DataCaptureStats` is returned by `build_stats` and has the required methods to query stats.
-* Domain types hold captured numbers, frequencies, stats and error events such as an invalid number, an attempt to build
-stats for empty data, an attempt to query a non captured number, and so on.
-* Although two classes at least were requested, a functional programming paradigm was used following Railway Oriented 
-Programming. This approach makes the code concise, easier to understand and maintain. For this reason `Result` container
-is used to indicate success or error of operations, then `map`ing and `bind`ing continuation logic based on the actual 
-data it holds.
 
 ### Algorithms complexity
 
@@ -36,9 +47,18 @@ Unit testing was integrated with random generated data also to test expected err
 
 ### REPL
 
-To load in a Python interactive session, source files are layered as following:
-1. domain.py
-1. util.py
-1. captured_number.py
-1. data_capture_stats.py
-1. data_capture.py
+Load `ooapi/data_capture.py` in an interactive Python session and execute for testing:
+
+```python
+capture = DataCapture()
+capture.add(3)
+capture.add(9)
+capture.add(3)
+capture.add(4)
+capture.add(6)
+
+stats = capture.build_stats()
+stats.less(4) # should return 2 (only two values 3, 3 are less than 4)
+stats.between(3, 6) # should return 4 (3, 3, 4 and 6 are between 3 and 6)
+stats.greater(4) # should return 2 (6 and 9 are the only two values greater than 4)
+```

@@ -4,14 +4,15 @@ from hypothesis import given
 from hypothesis.strategies import integers, lists
 import pytest
 
-from data_capture import (
+from core.domain import (
     MIN_VALID_NUMBER,
     MAX_VALID_NUMBER,
     DataCapture,
     InvalidNumberError,
     NoCapturedNumbersError,
 )
-from .util import invalid_number
+from ooapi.data_capture import DataCapture
+from tests.util import invalid_number
 
 
 @given(invalid_number())
