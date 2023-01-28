@@ -31,11 +31,9 @@ def add(dc: DataCapture, number: ValidNumber) -> ActiveDataCapture:
             return ActiveDataCapture(captured_numbers, CapturedNumberFrequency(1))
 
         case ActiveDataCapture() as adc:
-            match adc.captured_numbers.try_find(captured_number.value):
-                case Some(capt_num_freq):
-                    new_cnf = CapturedNumberFrequency(capt_num_freq.frequency + 1)
-                case Nothing:
-                    new_cnf = CapturedNumberFrequency(1)
+            new_cnf = adc.captured_numbers.try_find(captured_number.value)\
+                .map(lambda cnf: CapturedNumberFrequency(cnf.frequency + 1))\
+                .default_value(CapturedNumberFrequency(1))
             new_captured_numbers = adc.captured_numbers.add(captured_number.value, new_cnf)
             new_captured_frequency = CapturedNumberFrequency(adc.total_captured_numbers.frequency + 1)
             return ActiveDataCapture(new_captured_numbers, new_captured_frequency)

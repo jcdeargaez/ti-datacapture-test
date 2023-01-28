@@ -28,11 +28,13 @@ def test_less_than_query(numbers_stats: Tuple[Dict[int, int], DataCaptureStats])
 @given(invalid_number(), stats(max_valid_number=MAX_VALID_NUMBER - 1))
 def test_less_than_query_errors(number: int, numbers_stats: Tuple[Dict[int, int], DataCaptureStats]) -> None:
     _, dcs = numbers_stats
-    with pytest.raises(InvalidNumberError):
+    with pytest.raises(InvalidNumberError) as ex_info:
         dcs.less(number)
+    assert ex_info.value.number == number
 
-    with pytest.raises(NoCapturedNumberError):
+    with pytest.raises(NoCapturedNumberError) as ex_info:
         dcs.less(MAX_VALID_NUMBER)
+    assert ex_info.value.number == MAX_VALID_NUMBER
 
 
 @given(stats())
@@ -47,11 +49,13 @@ def test_greater_query(numbers_stats: Tuple[Dict[int, int], DataCaptureStats]) -
 @given(invalid_number(), stats(max_valid_number=MAX_VALID_NUMBER - 1))
 def test_greater_query_errors(number: int, numbers_stats: Tuple[Dict[int, int], DataCaptureStats]) -> None:
     _, dcs = numbers_stats
-    with pytest.raises(InvalidNumberError):
+    with pytest.raises(InvalidNumberError) as ex_info:
         dcs.greater(number)
+    assert ex_info.value.number == number
 
-    with pytest.raises(NoCapturedNumberError):
+    with pytest.raises(NoCapturedNumberError) as ex_info:
         dcs.greater(MAX_VALID_NUMBER)
+    assert ex_info.value.number == MAX_VALID_NUMBER
 
 
 @given(stats())
