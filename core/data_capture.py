@@ -5,7 +5,6 @@ from expression.collections import Map, seq
 
 from core.domain import (
     ActiveDataCapture,
-    CapturedNumber,
     CapturedNumberFrequency,
     CapturedNumberStats,
     EmptyDataCapture,
@@ -24,17 +23,16 @@ def add(dc: DataCapture, number: ValidNumber) -> ActiveDataCapture:
     :param number: Number to capture.
     :return: New instance of active data capturer with added number and frequency updated.
     """
-    captured_number = CapturedNumber(number.value)
     match dc:
         case EmptyDataCapture():
-            captured_numbers = Map.empty().add(captured_number.value, CapturedNumberFrequency(1))
+            captured_numbers = Map.empty().add(number, CapturedNumberFrequency(1))
             return ActiveDataCapture(captured_numbers, CapturedNumberFrequency(1))
 
         case ActiveDataCapture() as adc:
-            new_cnf = adc.captured_numbers.try_find(captured_number.value)\
+            new_cnf = adc.captured_numbers.try_find(number)\
                 .map(lambda cnf: CapturedNumberFrequency(cnf.frequency + 1))\
                 .default_value(CapturedNumberFrequency(1))
-            new_captured_numbers = adc.captured_numbers.add(captured_number.value, new_cnf)
+            new_captured_numbers = adc.captured_numbers.add(number, new_cnf)
             new_captured_frequency = CapturedNumberFrequency(adc.total_captured_numbers.frequency + 1)
             return ActiveDataCapture(new_captured_numbers, new_captured_frequency)
 
@@ -45,20 +43,21 @@ def build_stats(dc: ActiveDataCapture) -> DataCaptureStats:
     :param dc: Active data capturer with some captured numbers.
     :return: CaptureDataStats instance with computed stats.
     """
-    def walk_captured_numbers_frequencies() -> Iterable[Tuple[CapturedNumber, CapturedNumberFrequency]]:
+    def walk_captured_numbers_frequencies() -> Iterable[Tuple[ValidNumber, CapturedNumberFrequency]]:
         for number in range(MIN_VALID_NUMBER, MAX_VALID_NUMBER + 1):
-            match dc.captured_numbers.try_find(number):
+            valid_number = ValidNumber(number)
+            match dc.captured_numbers.try_find(valid_number):
                 case Some(capt_num_freq):
-                    yield CapturedNumber(number), capt_num_freq
+                    yield valid_number, capt_num_freq
 
-    def map_scan_stats(acc: Tuple[Tuple[int | None, CapturedNumberStats | None], Tuple[int, int]],
-                       cn_cnf: Tuple[CapturedNumber, CapturedNumberFrequency])\
-            -> Tuple[Tuple[int | None, CapturedNumberStats | None], Tuple[int, int]]:
-        cn, cnf = cn_cnf
+    def map_scan_stats(acc: Tuple[Tuple[ValidNumber | None, CapturedNumberStats | None], Tuple[int, int]],
+                       vn_cnf: Tuple[ValidNumber, CapturedNumberFrequency])\
+            -> Tuple[Tuple[ValidNumber | None, CapturedNumberStats | None], Tuple[int, int]]:
+        vn, cnf = vn_cnf
         _, (lesser_so_far, greater_so_far) = acc
         new_greater = greater_so_far - cnf.frequency
         cns = CapturedNumberStats(cnf.frequency, lesser_so_far, new_greater)
-        return (cn.value, cns), (lesser_so_far + cnf.frequency, new_greater)
+        return (vn, cns), (lesser_so_far + cnf.frequency, new_greater)
 
     stats = pipe(
         walk_captured_numbers_frequencies(),

@@ -16,12 +16,13 @@ class ValidNumber:
         if self.value < MIN_VALID_NUMBER or self.value > MAX_VALID_NUMBER:
             raise InvalidNumberError(self.value)
 
-
-@dataclass(frozen=True)
-class CapturedNumber:
-    """Holds the value for a captured number"""
-    value: int
-
+    def __lt__(self, other) -> bool:
+        """Needed to be used as Map Key"""
+        match other:
+            case ValidNumber():
+                return self.value < other.value
+            case _:
+                return False
 
 @dataclass(frozen=True)
 class CapturedNumberFrequency:
@@ -43,7 +44,7 @@ class EmptyDataCapture:
 @dataclass(frozen=True)
 class ActiveDataCapture:
     """Represents an active data capture object with captured numbers"""
-    captured_numbers: Map[CapturedNumber, CapturedNumberFrequency]
+    captured_numbers: Map[ValidNumber, CapturedNumberFrequency]
     total_captured_numbers: CapturedNumberFrequency
 
 
@@ -66,7 +67,7 @@ class CapturedNumberStats(CapturedNumberFrequency):
 @dataclass(frozen=True)
 class DataCaptureStats:
     """Holds the computed stats of captured numbers"""
-    stats: Map[CapturedNumber, CapturedNumberStats]
+    stats: Map[ValidNumber, CapturedNumberStats]
 
     def __post_init__(self):
         """Validates that stats are not empty"""

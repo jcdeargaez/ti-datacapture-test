@@ -14,7 +14,7 @@ def less(dcs: DataCaptureStats, number: ValidNumber) -> Option[int]:
     :param number: Number to query stats.
     :return: Captured numbers count less than the number if captured. Otherwise, nothing.
     """
-    return dcs.stats.try_find(number.value).map(lambda capt_num_stats: capt_num_stats.lesser)
+    return dcs.stats.try_find(number).map(lambda capt_num_stats: capt_num_stats.lesser)
 
 
 def greater(dcs: DataCaptureStats, number: ValidNumber) -> Option[int]:
@@ -24,7 +24,7 @@ def greater(dcs: DataCaptureStats, number: ValidNumber) -> Option[int]:
     :param number: Number to query stats.
     :return: Captured numbers count greater than the number if captured. Otherwise, nothing.
     """
-    return dcs.stats.try_find(number.value).map(lambda capt_num_stats: capt_num_stats.greater)
+    return dcs.stats.try_find(number).map(lambda capt_num_stats: capt_num_stats.greater)
 
 
 @effect.option[int]()
@@ -36,6 +36,6 @@ def between(dcs: DataCaptureStats, lower_number: ValidNumber, higher_number: Val
     :param higher_number: Higher bound number to query stats.
     :return: Captured numbers count for the inclusive range if both numbers were captured. Otherwise, nothing.
     """
-    lns: CapturedNumberStats = yield from dcs.stats.try_find(lower_number.value)
-    hns: CapturedNumberStats = yield from dcs.stats.try_find(higher_number.value)
+    lns: CapturedNumberStats = yield from dcs.stats.try_find(lower_number)
+    hns: CapturedNumberStats = yield from dcs.stats.try_find(higher_number)
     return hns.lesser + hns.frequency - lns.lesser

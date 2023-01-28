@@ -2,7 +2,6 @@ from expression import Some, Nothing
 
 import core.data_capture_stats
 from core.domain import (
-    CapturedNumber,
     InvalidBetweenRangeError,
     NoCapturedNumbersRangeError,
     NoCapturedNumberError,
