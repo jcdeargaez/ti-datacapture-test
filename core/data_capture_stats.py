@@ -1,41 +1,44 @@
-from expression import Option, effect
+from expression import Result, Ok, Error
 
 from core.domain import (
-    CapturedNumberStats,
     DataCaptureStats,
+    InvalidBetweenRangeError,
     ValidNumber,
 )
 
 
-def less(dcs: DataCaptureStats, number: ValidNumber) -> Option[int]:
+def less(dcs: DataCaptureStats, number: ValidNumber) -> int:
     """
     Returns the count of captured numbers less than the given number.
     :param dcs: Data capture stats instance with stats computed.
     :param number: Number to query stats.
-    :return: Captured numbers count less than the number if captured. Otherwise, nothing.
+    :return: Captured numbers count less than the number.
     """
-    return dcs.stats.try_find(number).map(lambda capt_num_stats: capt_num_stats.lesser)
+    return dcs.stats[number.value].lesser
 
 
-def greater(dcs: DataCaptureStats, number: ValidNumber) -> Option[int]:
+def greater(dcs: DataCaptureStats, number: ValidNumber) -> int:
     """
     Returns the count of captured numbers greater than the given number.
     :param dcs: Data capture stats instance with stats computed.
     :param number: Number to query stats.
-    :return: Captured numbers count greater than the number if captured. Otherwise, nothing.
+    :return: Captured numbers count greater than the number.
     """
-    return dcs.stats.try_find(number).map(lambda capt_num_stats: capt_num_stats.greater)
+    return dcs.stats[number.value].greater
 
 
-@effect.option[int]()
-def between(dcs: DataCaptureStats, lower_number: ValidNumber, higher_number: ValidNumber) -> Option[int]:
+def between(dcs: DataCaptureStats, lower_number: ValidNumber, higher_number: ValidNumber)\
+        -> Result[int, InvalidBetweenRangeError]:
     """
     Returns the count of captured numbers between the inclusive range.
     :param dcs: Data capture stats instance with stats computed.
     :param lower_number: Lower bound number to query stats.
     :param higher_number: Higher bound number to query stats.
-    :return: Captured numbers count for the inclusive range if both numbers were captured. Otherwise, nothing.
+    :return: Captured numbers count for the inclusive range, if range is valid, otherwise invalid range error.
     """
-    lns: CapturedNumberStats = yield from dcs.stats.try_find(lower_number)
-    hns: CapturedNumberStats = yield from dcs.stats.try_find(higher_number)
-    return hns.lesser + hns.frequency - lns.lesser
+    if lower_number.value > higher_number.value:
+        return Error(InvalidBetweenRangeError(lower_number.value, higher_number.value))
+
+    lns = dcs.stats[lower_number.value]
+    hns = dcs.stats[higher_number.value]
+    return Ok(hns.lesser + hns.frequency - lns.lesser)

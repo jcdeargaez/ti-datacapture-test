@@ -1,12 +1,7 @@
-from expression import Some, Nothing
+from expression import Ok, Error
 
 import core.data_capture_stats
-from core.domain import (
-    InvalidBetweenRangeError,
-    NoCapturedNumbersRangeError,
-    NoCapturedNumberError,
-    ValidNumber,
-)
+from core.domain import ValidNumber
 
 
 class DataCaptureStats:
@@ -25,11 +20,7 @@ class DataCaptureStats:
         :return: Greater stats for the given number.
         :raise: if number is invalid or was not captured.
         """
-        match core.data_capture_stats.greater(self.dcs, ValidNumber(number)):
-            case Some(value):
-                return value
-            case Nothing:
-                raise NoCapturedNumberError(number)
+        return core.data_capture_stats.greater(self.dcs, ValidNumber(number))
 
     def less(self, number: int) -> int:
         """
@@ -38,11 +29,7 @@ class DataCaptureStats:
         :return: Less than stats for the given number.
         :raise: if number is invalid or was not captured.
         """
-        match core.data_capture_stats.less(self.dcs, ValidNumber(number)):
-            case Some(value):
-                return value
-            case Nothing:
-                raise NoCapturedNumberError(number)
+        return core.data_capture_stats.less(self.dcs, ValidNumber(number))
 
     def between(self, lower_number: int, higher_number: int) -> int:
         """
@@ -52,11 +39,9 @@ class DataCaptureStats:
         :return: Captured numbers count for the inclusive range.
         :raise: if the numbers are invalid or were not captured.
         """
-        if lower_number > higher_number:
-            raise InvalidBetweenRangeError(lower_number, higher_number)
-
         match core.data_capture_stats.between(self.dcs, ValidNumber(lower_number), ValidNumber(higher_number)):
-            case Some(value):
+            case Ok(value):
                 return value
-            case Nothing:
-                raise NoCapturedNumbersRangeError(lower_number, higher_number)
+
+            case Error(err):
+                raise err

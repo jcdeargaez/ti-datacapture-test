@@ -8,10 +8,10 @@ from core.domain import (
     MIN_VALID_NUMBER,
     MAX_VALID_NUMBER,
     DataCapture,
-    InvalidNumberError,
-    NoCapturedNumbersError,
+    InvalidNumberError
 )
 from ooapi.data_capture import DataCapture
+from ooapi.domain import NoCapturedNumbersError
 from tests.util import invalid_number
 
 
