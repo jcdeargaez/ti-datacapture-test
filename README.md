@@ -15,8 +15,9 @@ operations as functions. This has advantage of having succinct code, easy to und
 inherits the principle of making illegal states unrepresentable. For instance, at this core there is no code path to
 build stats when numbers are not captured yet.
 
-Having the core composed of pure functions and immutable data, gives confidence that state won't be corrupted by wrong
-states bugs. Also, option containers are used to represent presence and absense of data, so `None` errors are avoided.
+Having the core composed of pure functions and immutable data, gives confidence that state won't be corrupted by illegal
+states bugs. Also, `Result` container is used to represent success or failure of an operation, so caller decides how to
+handle non success cases.
 
 With above benefits, technical debt is reduced.
 

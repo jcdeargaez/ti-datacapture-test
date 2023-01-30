@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 from expression.collections import Map
 
@@ -24,14 +25,15 @@ class ValidNumber:
             case _:
                 return False
 
+
 @dataclass(frozen=True)
-class CapturedNumberFrequency:
+class NumberFrequency:
     """Captured numbers can repeat, so a frequency is needed"""
     frequency: int
 
     def __post_init__(self):
         """Validates that a frequency is positive, otherwise raises error"""
-        if self.frequency <= 0:
+        if self.frequency < 0:
             raise Exception(f'Invalid frequency [{self.frequency}]')
 
 
@@ -44,15 +46,15 @@ class EmptyDataCapture:
 @dataclass(frozen=True)
 class ActiveDataCapture:
     """Represents an active data capture object with captured numbers"""
-    captured_numbers: Map[ValidNumber, CapturedNumberFrequency]
-    total_captured_numbers: CapturedNumberFrequency
+    captured_numbers: Map[ValidNumber, NumberFrequency]
+    total_captured_numbers: NumberFrequency
 
 
 DataCapture = EmptyDataCapture | ActiveDataCapture
 
 
 @dataclass(frozen=True)
-class CapturedNumberStats(CapturedNumberFrequency):
+class NumberStats(NumberFrequency):
     """When stats are computed, we need to know how many numbers are lesser and greater relative to a captured number"""
     lesser: int
     greater: int
@@ -66,13 +68,8 @@ class CapturedNumberStats(CapturedNumberFrequency):
 
 @dataclass(frozen=True)
 class DataCaptureStats:
-    """Holds the computed stats of captured numbers"""
-    stats: Map[ValidNumber, CapturedNumberStats]
-
-    def __post_init__(self):
-        """Validates that stats are not empty"""
-        if self.stats.is_empty():
-            raise NoCapturedNumbersError()
+    """Holds the computed stats of valid numbers space"""
+    stats: List[NumberStats]
 
 
 @dataclass(frozen=True)
@@ -82,26 +79,7 @@ class InvalidNumberError(Exception):
 
 
 @dataclass(frozen=True)
-class NoCapturedNumbersError(Exception):
-    """Raised when attempting to build stats before capturing numbers"""
-    pass
-
-
-@dataclass(frozen=True)
-class NoCapturedNumberError(Exception):
-    """Raised when a number was not captured"""
-    number: int
-
-
-@dataclass(frozen=True)
 class InvalidBetweenRangeError(Exception):
     """Raised when a between range is invalid"""
-    lower_number: int
-    higher_number: int
-
-
-@dataclass(frozen=True)
-class NoCapturedNumbersRangeError(Exception):
-    """Raised when one or both numbers were not captured"""
     lower_number: int
     higher_number: int

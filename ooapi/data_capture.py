@@ -2,10 +2,10 @@ import core.data_capture
 from core.domain import (
     ActiveDataCapture,
     EmptyDataCapture,
-    ValidNumber,
-    NoCapturedNumbersError,
+    ValidNumber
 )
 from ooapi.data_capture_stats import DataCaptureStats
+from ooapi.domain import NoCapturedNumbersError
 
 
 class DataCapture:
@@ -31,6 +31,7 @@ class DataCapture:
         match self.dc:
             case EmptyDataCapture():
                 raise NoCapturedNumbersError()
+
             case ActiveDataCapture() as adc:
                 dcs = core.data_capture.build_stats(adc)
                 return DataCaptureStats(dcs)
